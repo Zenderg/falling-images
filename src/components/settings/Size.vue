@@ -4,8 +4,8 @@
             Минимальный размер
         </v-subheader>
         <v-text-field
-                @change="changeSize"
-                v-model="min"
+                @change="setSize({min: $event, max: max})"
+                :value="min"
                 type="number"
                 suffix="px"
         ></v-text-field>
@@ -13,8 +13,8 @@
             Максимальный размер
         </v-subheader>
         <v-text-field
-                @change="changeSize"
-                v-model="max"
+                @change="setSize({min: min, max:$event})"
+                :value="max"
                 type="number"
                 suffix="px"
         ></v-text-field>
@@ -22,20 +22,12 @@
 </template>
 
 <script>
-    import {bus} from '../../bus'
+    import {mapState, mapMutations} from 'vuex';
+
     export default {
         name: "Size",
-        data(){
-            return{
-                min:50,
-                max:300
-            }
-        },
-        methods:{
-            changeSize(){
-                bus.$emit("change-size", {min:Number(this.min), max:Number(this.max)});
-            }
-        }
+        computed: mapState({max: 'maxSize', min: 'minSize'}),
+        methods: {...mapMutations(['setSize'])}
     }
 </script>
 

@@ -4,28 +4,20 @@
             Максимальная дистанция
         </v-subheader>
         <v-text-field
-                @change="changeDistance"
-                v-model="max"
+                @change="setDistance({max: $event})"
+                :value="max"
                 type="number"
         ></v-text-field>
     </div>
 </template>
 
 <script>
-    import {bus} from '../../bus'
+    import {mapState, mapMutations} from 'vuex';
 
     export default {
         name: "Distance",
-        data(){
-            return{
-                max:100
-            }
-        },
-        methods:{
-            changeDistance(){
-                bus.$emit("change-distance", {max:Number(this.max)});
-            }
-        }
+        computed: mapState({max: 'maxDistance'}),
+        methods: {...mapMutations(['setDistance'])}
     }
 </script>
 

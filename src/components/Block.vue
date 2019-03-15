@@ -1,5 +1,6 @@
 <template>
-    <div :style="`transform:translate(${x}px, ${y}px) rotate(${angle}deg); transition: ${speed}s; background-image:url('${src}'); width:${width}px; height:${height}px; opacity:${opacity}`" class="block">
+    <div :style="`transform:translate(${x}px, ${y}px) rotate(${angle}deg); transition: ${speed}s; background-image:url('${src}'); width:${width}px; height:${height}px; opacity:${opacity}`"
+         class="block">
 
     </div>
 </template>
@@ -7,36 +8,33 @@
 <script>
     export default {
         name: "Block",
-        data(){
-            return{
-                y:-500
+        data() {
+            return {
+                y: -Math.max(this.height, this.width)-100
             }
         },
-        props:{
-            speed:Number,
-            x:Number,
-            angle:Number,
-            src:String,
-            width:Number,
-            height:Number,
-            opacity:Number
+        props: {
+            speed: Number,
+            x: Number,
+            angle: Number,
+            src: String,
+            width: Number,
+            height: Number,
+            opacity: Number
         },
-        mounted(){
-            setTimeout(()=>{
-                this.y=document.documentElement.clientHeight+700;
-            }, 100);
+        mounted() {
+            setTimeout(() => {
+                this.y = document.documentElement.clientHeight + Math.max(this.height, this.width) + 200;
+            }, 300);
         }
     }
 </script>
 
 <style scoped>
-    .block{
-        top:0;
-        left:0;
-        /*background-color: #ff753b;*/
+    .block {
+        top: 0;
+        left: 0;
         position: absolute;
-        opacity: 0.8;
-        background-image: url('/src/assets/js.webp');
         -webkit-background-size: contain;
         background-size: contain;
         background-repeat: no-repeat;

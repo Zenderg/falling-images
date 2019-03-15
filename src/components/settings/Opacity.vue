@@ -2,8 +2,8 @@
     <div>
         <v-subheader>Прозрачность</v-subheader>
         <v-slider
-                v-model="slider"
-                @change="changeOpacity"
+                :value="opacity"
+                @change="setOpacity($event)"
                 :max="1"
                 step="0.01"
                 :min="0"
@@ -13,20 +13,12 @@
 </template>
 
 <script>
-    import {bus} from '../../bus'
+    import {mapState, mapMutations} from 'vuex';
 
     export default {
         name: "Opacity",
-        data(){
-            return{
-                slider:0.8
-            }
-        },
-        methods:{
-            changeOpacity(){
-                bus.$emit("change-opacity", this.slider);
-            }
-        }
+        computed: mapState(['opacity']),
+        methods: {...mapMutations(['setOpacity'])}
     }
 </script>
 

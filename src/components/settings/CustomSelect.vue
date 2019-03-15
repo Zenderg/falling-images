@@ -1,28 +1,27 @@
 <template>
     <div class="custom-select">
         <v-text-field
-                v-model="customSelect"
-                label="Кастомная ссылка на изображение"
-                @input="customSelected"
+                :value="value"
+                @change="updateCustomSelect({index:index, prop:'text', context:$event})"
+                append-icon="close"
+                :prepend-icon="visible ? 'visibility' : 'visibility_off'"
+                @click:prepend="updateCustomSelect({index:index, prop:'visible', context:!visible})"
+                @click:append="$emit('remove')"
         ></v-text-field>
     </div>
 </template>
 
 <script>
-    import {bus} from '../../bus'
+    import {mapMutations} from 'vuex'
 
     export default {
         name: "CustomSelect",
-        data(){
-            return{
-                customSelect:""
-            }
+        props: {
+            value: String,
+            index: Number,
+            visible: Boolean
         },
-        methods:{
-            customSelected(){
-                bus.$emit('custom-selected', [this.customSelect]);
-            }
-        }
+        methods: {...mapMutations(['updateCustomSelect'])}
     }
 </script>
 

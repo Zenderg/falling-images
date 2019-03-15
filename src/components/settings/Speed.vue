@@ -1,32 +1,24 @@
 <template>
     <div>
-        <v-subheader>Скорость</v-subheader>
+        <v-subheader>Скорость падения</v-subheader>
         <v-slider
                 :min="-10"
                 :max="20"
                 step="1"
-                v-model="speed"
-                @change="changeSpeed"
+                :value="speed"
+                @change="setFallingSpeed($event)"
                 thumb-label
         ></v-slider>
     </div>
 </template>
 
 <script>
-    import {bus} from '../../bus'
+    import {mapState, mapMutations} from 'vuex';
 
     export default {
         name: "Speed",
-        data() {
-            return {
-                speed: 0
-            }
-        },
-        methods:{
-            changeSpeed(){
-                bus.$emit("change-speed", this.speed);
-            }
-        }
+        computed: mapState({speed: "coefFallingSpeed"}),
+        methods: {...mapMutations(['setFallingSpeed'])}
     }
 </script>
 

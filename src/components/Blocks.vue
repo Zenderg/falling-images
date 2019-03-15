@@ -4,13 +4,13 @@
                 v-for="block in blocks"
                 :angle="block.angle"
                 :key="block.id"
-                :speed="block.speed(coefSpeed)"
+                :speed="block.speed(coefFallingSpeed)"
                 :x="block.x"
                 :id="'block-'+block.id"
                 :src="block.src"
                 :opacity="block.opacity"
                 :width="block.width(minSize, maxSize, maxDistance)"
-                :height="block.width(minSize, maxSize, maxDistance)"
+                :height="block.height"
         ></Block>
     </div>
 </template>
@@ -18,37 +18,43 @@
 <script>
     import {bus} from '../bus'
     import Block from './Block'
+    import {mapState, mapGetters} from 'vuex'
 
     export default {
         name: "Blocks",
         data() {
             return {
                 blocks: [],
-                background: [],
-                customSelectedAry:[],
-                multiSelectedAry:[],
-                opacity:0.8,
-                coefSpeed:0,
-                minSize:50,
-                maxSize:300,
-                maxDistance:100
+                generationInterval: null,
+            }
+        },
+        computed: {
+            ...mapState([
+                'minSize',
+                'maxSize',
+                'maxDistance',
+                'coefFallingSpeed',
+                'quantity',
+                'opacity',
+                'generationSpeed',
+                'templateSelects'
+            ]),
+            ...mapGetters([
+                'getCustomSelects'
+            ]),
+            backgrounds() {
+                return [...this.templateSelects, ...this.getCustomSelects]
             }
         },
         mounted() {
-            bus.$on("selected", this.selected);
-            bus.$on("custom-selected", this.customSelected);
-            bus.$on("change-opacity", (opacity) => this.opacity = opacity);
-            bus.$on("change-speed", (speed) => this.coefSpeed = speed);
-            bus.$on("change-size", (size) => {
-                this.minSize = size.min;
-                this.maxSize = size.max;
-            });
-            bus.$on("change-distance", (distance) => {
-                this.maxDistance = distance.max;
+            bus.$on("change-generation-speed", () => {
+                clearInterval(this.generationInterval);
+                this.setNewGenerationInterval();
             });
 
-            setInterval(this.addBlock, 1000);
-            setInterval(this.removeBlocks, 1000);
+            this.setNewGenerationInterval();
+
+            setInterval(this.removeBlocks, 100);
         },
         methods: {
             addBlock() {
@@ -59,36 +65,37 @@
                     x: Math.random() * window.innerWidth - 150,
                     id: Math.random() * 100000000,
                     angle: Math.random() * 360,
-                    src: this.getSrc(this.background),
-                    opacity:this.opacity,
+                    src: this.getSrc(this.backgrounds),
+                    opacity: this.opacity,
                     width(minSize, maxSize, maxDistance) {
-                        return Math.abs(this.distance - maxDistance) * ((maxSize-minSize)/maxDistance) + minSize;
+                        let result = Math.abs(this.distance - maxDistance) * ((maxSize - minSize) / maxDistance) + minSize;
+                        this.height = result;
+                        return Number(result);
                     },
-                    // height:this.width(),
+                    height: 0,
                     distance: Math.random() * this.maxDistance
                 });
             },
             removeBlocks() {
                 this.blocks.forEach((block, index) => {
-                    if (document.getElementById("block-" + block.id) === undefined) return;
+                    let domBlock = document.getElementById("block-" + block.id);
+                    let limit = document.documentElement.clientHeight + Math.max(domBlock.getAttribute("height"), domBlock.getAttribute("width")) + 100;
 
-                    let blockInf = document.getElementById("block-" + block.id).getBoundingClientRect();
-                    if (blockInf.y > window.innerHeight + 600) this.blocks.splice(index, 1);
+                    if (domBlock === undefined) return;
+                    if (domBlock.getBoundingClientRect().y > limit) {
+                        this.blocks.splice(index, 1);
+                    }
                 });
-            },
-            selected(ary) {
-                this.multiSelectedAry = ary;
-                this.mergeSelections();
-            },
-            customSelected(ary){
-                this.customSelectedAry = ary;
-                this.mergeSelections();
-            },
-            mergeSelections(){
-                this.background=[...this.multiSelectedAry, ...this.customSelectedAry];
             },
             getSrc(ary) {
                 return ary.length ? ary[Math.round(Math.random() * (ary.length - 1))] : ""
+            },
+            setNewGenerationInterval() {
+                this.generationInterval = setInterval(() => {
+                    for (let i = 0; i < this.quantity; i++) {
+                        this.addBlock();
+                    }
+                }, this.generationSpeed);
             }
         },
         components: {

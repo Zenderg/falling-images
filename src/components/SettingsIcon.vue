@@ -1,5 +1,5 @@
 <template>
-    <v-icon @click="showSidebar" class="settings-icon">settings</v-icon>
+    <v-icon @click.stop="showSidebar" class="settings-icon">settings</v-icon>
 </template>
 
 <script>
@@ -7,13 +7,8 @@
 
     export default {
         name: "SettingsIcon",
-        data(){
-            return{
-
-            }
-        },
-        methods:{
-            showSidebar(){
+        methods: {
+            showSidebar() {
                 bus.$emit("showSidebar");
             }
         }
@@ -21,7 +16,7 @@
 </script>
 
 <style scoped>
-    .settings-icon{
+    .settings-icon {
         position: absolute;
         top: 50px;
         left: 50px;
@@ -31,7 +26,7 @@
         z-index: 2;
     }
 
-    .settings-icon:hover{
+    .settings-icon:hover {
         animation-play-state: running;
     }
 
@@ -39,7 +34,7 @@
         from {
             transform: rotate(0deg);
         }
-        to{
+        to {
             transform: rotate(360deg);
         }
     }
