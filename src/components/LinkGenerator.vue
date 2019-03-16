@@ -36,7 +36,7 @@
         },
         methods: {
             generateLink() {
-                this.link+="http://localhost:8080/?";
+                this.link+="http://falling-images.surge.sh/?";
                 this.link+="templateSelects="+this.getStrTemplateSelects+"&";
                 this.link+="customSelects="+this.getStrCustomSelects+"&";
                 this.link+="opacity="+this.opacity+"&";
